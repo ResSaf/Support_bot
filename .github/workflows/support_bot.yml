@@ -34,6 +34,7 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_BOT_TOKEN:   ${{ secrets.SLACK_BOT_TOKEN }}     # valfri
           SLACK_CHANNEL_ID:  ${{ secrets.SLACK_CHANNEL_ID }}    # valfri
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
         run: python support_bot.py
 
       - name: Spara veckans val (commit last_week.json)
