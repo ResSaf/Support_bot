@@ -70,21 +70,22 @@ def already_ran_this_week():
 
 
 def pick_pair(pool, exclude_ids):
-    """
-    Väljer 2 olika personer ur pool.
-    exclude_ids = förra veckans primär + backup (kan ej väljas igen direkt).
-    Om poolen är för liten för att exkludera, ignoreras regeln.
-    """
-    available = [p for p in pool if p not in exclude_ids]
+    available = [(uid, w) for uid, w in pool if uid not in exclude_ids]
     if len(available) < 2:
-        available = pool[:]
+        available = list(pool)
 
     if len(available) < 2:
         raise ValueError(f"Poolen måste ha minst 2 personer, har {len(available)}.")
 
-    primary = random.choice(available)
-    available.remove(primary)
-    backup = random.choice(available)
+    ids     = [uid for uid, w in available]
+    weights = [w   for uid, w in available]
+
+    primary = random.choices(ids, weights=weights, k=1)[0]
+    available = [(uid, w) for uid, w in available if uid != primary]
+    ids     = [uid for uid, w in available]
+    weights = [w   for uid, w in available]
+    backup  = random.choices(ids, weights=weights, k=1)[0]
+
     return primary, backup
 
 
