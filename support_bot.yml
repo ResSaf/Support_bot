@@ -1,0 +1,45 @@
+# .github/workflows/support_bot.yml
+#
+# Kör support_bot.py varje måndag kl 09:00 Stockholm-tid
+# Vinter (CET  = UTC+1): 08:00 UTC = 09:00 Stockholm
+# Sommar (CEST = UTC+2): 07:00 UTC = 09:00 Stockholm
+# Båda cron-rader körs – already_ran_this_week() i Python förhindrar dubbelkörning.
+
+name: Support Duty Bot
+
+on:
+  schedule:
+    - cron: "0 8 * * 1"   # Vinter: 08:00 UTC = 09:00 CET
+    - cron: "0 7 * * 1"   # Sommar: 07:00 UTC = 09:00 CEST
+  workflow_dispatch:        # Möjliggör manuell körning via GitHub UI
+
+permissions:
+  contents: write           # Behövs för att commita last_week.json
+
+jobs:
+  pick-duty:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Kör support_bot.py
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_BOT_TOKEN:   ${{ secrets.SLACK_BOT_TOKEN }}     # valfri
+          SLACK_CHANNEL_ID:  ${{ secrets.SLACK_CHANNEL_ID }}    # valfri
+        run: python support_bot.py
+
+      - name: Spara veckans val (commit last_week.json)
+        run: |
+          git config user.name  "support-bot"
+          git config user.email "support-bot@perific.se"
+          git add last_week.json
+          git diff --cached --quiet || git commit -m "chore: support duty vecka $(date +%V)"
+          git push

@@ -4,7 +4,7 @@ support_bot.py – Väljer Support Duty (primär + backup) för veckan
 och postar i Slack. Körs automatiskt varje måndag via GitHub Actions.
 
 Konfiguration:
-  POOL       = listan med Slack User IDs som ingår i rotationen
+  POOL               = listan med Slack User IDs som ingår i rotationen
   SLACK_WEBHOOK_URL  = miljövariabel (GitHub Secret)
   SLACK_BOT_TOKEN    = miljövariabel (GitHub Secret) – VALFRI, behövs bara
                        för att uppdatera Channel Topic
@@ -24,18 +24,16 @@ import urllib.error
 # ─── KONFIGURERA POOL HÄR ────────────────────────────────────────────────────
 # Ersätt med faktiska Slack User IDs (format: U012AB3CD)
 POOL = [
-   
     "U0450PC2Y9H",  # Dennis Lundgren
     "U03G4KL9QDD",  # Erik Åström
     "U0459W0926K",  # Guillaume Lorin
     "U06TB02GY4U",  # Muzzafer Arpacik
     "U039J28MYUF",  # Mats Lundberg
     "U03G4KL4K8X",  # Simon Gribert
-    "U0A5QA2BZ",  # Tomas Öquist
-
+    "U0A5QA2BZ",    # Tomas Öquist
 ]
 
-STATE_FILE = "last_week.json"   # Sparas i repot via git commit i Actions
+STATE_FILE = "last_week.json"
 
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -45,18 +43,28 @@ def load_last_week():
     if os.path.exists(STATE_FILE):
         with open(STATE_FILE) as f:
             return json.load(f)
-    return {"primary": None, "backup": None}
+    return {"primary": None, "backup": None, "week": 0}
 
-    def save_this_week(primary_id, backup_id):
+
+def save_this_week(primary_id, backup_id):
+    """Sparar veckans par i state-filen (committas tillbaka till repo)."""
     with open(STATE_FILE, "w") as f:
         json.dump({
             "primary": primary_id,
             "backup": backup_id,
-            "week": datetime.date.today().isocalendar()[1]  # ← lägg till
+            "week": datetime.date.today().isocalendar()[1]
         }, f, indent=2)
-    """Sparar veckans par i state-filen (committas tillbaka till repo)."""
-    with open(STATE_FILE, "w") as f:
-        json.dump({"primary": primary_id, "backup": backup_id}, f, indent=2)
+
+
+def already_ran_this_week():
+    """Förhindrar dubbelkörning om båda cron-triggers råkar gälla samma vecka."""
+    if os.path.exists(STATE_FILE):
+        with open(STATE_FILE) as f:
+            state = json.load(f)
+        if state.get("week") == datetime.date.today().isocalendar()[1]:
+            print("⏭️  Redan kört denna vecka, hoppar över.")
+            return True
+    return False
 
 
 def pick_pair(pool, exclude_ids):
@@ -67,7 +75,6 @@ def pick_pair(pool, exclude_ids):
     """
     available = [p for p in pool if p not in exclude_ids]
     if len(available) < 2:
-        # Pool för liten – ignorera exclude och välj ur hela poolen
         available = pool[:]
 
     if len(available) < 2:
@@ -168,23 +175,16 @@ def update_channel_topic(bot_token, channel_id, primary_id, backup_id):
 
 
 def main():
-    def already_ran_this_week():
+    if already_ran_this_week():
         return
-    """Förhindrar dubbelkörning om båda cron-triggers råkar gälla samma vecka."""
-    if os.path.exists(STATE_FILE):
-        with open(STATE_FILE) as f:
-            state = json.load(f)
-        if state.get("week") == datetime.date.today().isocalendar()[1]:
-            print("⏭️  Redan kört denna vecka, hoppar över.")
-            return True
-    return False
+
     webhook_url = os.environ.get("SLACK_WEBHOOK_URL")
     if not webhook_url:
         raise EnvironmentError("SLACK_WEBHOOK_URL är inte satt som miljövariabel.")
 
     last_week = load_last_week()
     exclude = [last_week["primary"], last_week["backup"]]
-    exclude = [e for e in exclude if e]  # ta bort None
+    exclude = [e for e in exclude if e]
 
     primary_id, backup_id = pick_pair(POOL, exclude)
     print(f"Vald: primär={primary_id}, backup={backup_id}")
