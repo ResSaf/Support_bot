@@ -1,18 +1,17 @@
 # .github/workflows/support_bot.yml
 #
-# Kör support_bot.py varje måndag kl 08:00 (Europe/Stockholm = UTC+1/+2)
-# Vinter: 07:00 UTC = 08:00 CET  →  cron: "0 7 * * 1"
-# Sommar: 06:00 UTC = 08:00 CEST →  cron: "0 6 * * 1"
-#
-# Enklaste lösningen: kör 07:00 UTC (fungerar vintertid, 09:00 sommartid)
-# Om exakt 08:00 sommar/vintertid är viktigt – använd en extern cron-tjänst.
+# Kör support_bot.py varje måndag kl 09:00 Stockholm-tid
+# Vinter (CET  = UTC+1): 08:00 UTC = 09:00 Stockholm
+# Sommar (CEST = UTC+2): 07:00 UTC = 09:00 Stockholm
+# Båda cron-rader körs – already_ran_this_week() i Python förhindrar dubbelkörning.
 
 name: Support Duty Bot
 
 on:
   schedule:
-    - cron: "0 8 * * 1"   # Vinter (CET  = UTC+1): 08:00 UTC = 09:00 Stockholm
-    - cron: "0 7 * * 1"   # Sommar (CEST = UTC+2): 07:00 UTC = 09:00 Stockholm       # Möjliggör manuell körning via GitHub UI
+    - cron: "0 8 * * 1"   # Vinter: 08:00 UTC = 09:00 CET
+    - cron: "0 7 * * 1"   # Sommar: 07:00 UTC = 09:00 CEST
+  workflow_dispatch:        # Möjliggör manuell körning via GitHub UI
 
 permissions:
   contents: write           # Behövs för att commita last_week.json
