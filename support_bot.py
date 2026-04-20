@@ -30,7 +30,6 @@ POOL = [
     ("U03G4KL9QDD", 1.0),   # Erik Åström
     ("U0459W0926K", 0.8),   # Guillaume Lorin   ← väljs 80% av fallen
     ("U06TB02GY4U", 1.0),   # Muzzafer Arpacik
-    ("U039J28MYUF", 0.2),   # Mats Lundberg     ← väljs sällan
     ("U03G4KL4K8X", 1.0),   # Simon Gribert
     ("U0A5QA2BZ",   0.3),   # Tomas Öquist
     ("U3WBSPKPW",   0.5),   # Anders Björkman← väljs sällan
