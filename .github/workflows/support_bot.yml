@@ -42,4 +42,5 @@ jobs:
           git config user.email "support-bot@perific.se"
           git add last_week.json
           git diff --cached --quiet || git commit -m "chore: support duty vecka $(date +%V)"
+          git pull --rebase origin main
           git push
