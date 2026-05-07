@@ -33,6 +33,7 @@ POOL = [
     ("U03G4KL4K8X", 1.0),   # Simon Gribert
     ("U0A5QA2BZ",   0.3),   # Tomas Öquist
     ("U3WBSPKPW",   0.5),   # Anders Björkman← väljs sällan
+    ("U04M056CF29", 0.7),   # Jonny Svahn
 ]
 STATE_FILE = "last_week.json"
 
