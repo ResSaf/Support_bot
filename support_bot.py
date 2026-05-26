@@ -27,7 +27,7 @@ import urllib.error
 # Vikt 1.0 = normal  |  0.5 = halvt så ofta  |  0.2 = sällan
 POOL = [
     ("U0450PC2Y9H", 1.0),   # Dennis Lundgren
-    ("U03G4KL9QDD", 1.0),   # Erik Åström
+    ("U03G4KL9QDD", 0.0000001),   # Erik Åström
     ("U0459W0926K", 0.8),   # Guillaume Lorin   ← väljs 80% av fallen
     ("U06TB02GY4U", 1.0),   # Muzzafer Arpacik
     ("U03G4KL4K8X", 1.0),   # Simon Gribert
