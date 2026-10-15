@@ -26,14 +26,7 @@ import urllib.error
 # Namn: (Slack User ID, vikt)
 # Vikt 1.0 = normal  |  0.5 = halvt så ofta  |  0.2 = sällan
 POOL = [
-    ("U0450PC2Y9H", 1.0),   # Dennis Lundgren
-    ("U03G4KL9QDD", 0.0000001),   # Erik Åström
-    ("U0459W0926K", 0.8),   # Guillaume Lorin   ← väljs 80% av fallen
-    ("U06TB02GY4U", 1.0),   # Muzzafer Arpacik
-    ("U03G4KL4K8X", 1.0),   # Simon Gribert
-    ("U0A5QA2BZ",   0.3),   # Tomas Öquist
-    ("U3WBSPKPW",   0.5),   # Anders Björkman← väljs sällan
-    ("U04M056CF29", 0.7),   # Jonny Svahn
+    
 ]
 STATE_FILE = "last_week.json"
 
